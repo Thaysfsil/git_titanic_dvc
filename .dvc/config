@@ -1,0 +1,4 @@
+[core]
+    remote = thaysfsil
+['remote "thaysfsil"']
+    url = https://github.com/Thaysfsil/git_titanic_dvc.git

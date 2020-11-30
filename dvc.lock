@@ -1,0 +1,121 @@
+train_prepare:
+  cmd: python src/prepare.py  train_prepare data/titanic.csv
+  deps:
+  - path: data/titanic.csv
+    md5: 61fdd54abdbf6a85b778e937122e1194
+    size: 61194
+  - path: src/prepare.py
+    md5: 03d1a0c28349a2b27142d8c7c8c97915
+    size: 1609
+  params:
+    params.yaml:
+      train_prepare.col_to_encoder: Sex
+  outs:
+  - path: data/train_prepare/encoder.pkl
+    md5: a72a2258983c3a6449223cbb771ab008
+    size: 261
+  - path: data/train_prepare/train.csv
+    md5: 54997e9709d45182448aa396f4798a78
+    size: 15645
+test_prepare:
+  cmd: python src/prepare.py  test_prepare data/titanic_test.csv
+  deps:
+  - path: data/titanic_test.csv
+    md5: 4c2da764ad512f877eea4baa3b1fb8b9
+    size: 28627
+  - path: src/prepare.py
+    md5: 03d1a0c28349a2b27142d8c7c8c97915
+    size: 1609
+  params:
+    params.yaml:
+      test_prepare.col_to_encoder: Sex
+  outs:
+  - path: data/test_prepare/encoder.pkl
+    md5: a72a2258983c3a6449223cbb771ab008
+    size: 261
+  - path: data/test_prepare/test.csv
+    md5: 09647fe904c6a8a754c414020986c77c
+    size: 7658
+model_train:
+  cmd: python src/train.py data/train_prepare/train.csv
+  deps:
+  - path: data/train_prepare/train.csv
+    md5: 54997e9709d45182448aa396f4798a78
+    size: 15645
+  - path: src/train.py
+    md5: fada86b5052ddbc73833417539661b12
+    size: 1022
+  params:
+    params.yaml:
+      model_train.features:
+      - Pclass
+      - Age
+      - SibSp
+      - Parch
+      - Fare
+      - emb_S
+      - emb_C
+      - emb_Q
+      - Sex
+      - has_cabin
+      model_train.model_param:
+        criterion: entropy
+        random_state: 20181105
+        min_samples_split: 90
+      model_train.target: Survived
+  outs:
+  - path: data/model_train/model.pkl
+    md5: 3503ca3066e76c3a036a9793f7800c99
+    size: 1441
+model_predict:
+  cmd: python src/predict.py data/test_prepare/test.csv data/model_train/model.pkl
+  deps:
+  - path: data/test_prepare/test.csv
+    md5: 09647fe904c6a8a754c414020986c77c
+    size: 7658
+  - path: src/predict.py
+    md5: 185b126f30bb398dcc80a4995e5b80c2
+    size: 1129
+  params:
+    params.yaml:
+      model_predict.features:
+      - Pclass
+      - Age
+      - SibSp
+      - Parch
+      - Fare
+      - emb_S
+      - emb_C
+      - emb_Q
+      - Sex
+      - has_cabin
+  outs:
+  - path: data/model_predict/df_prediction.csv
+    md5: 9eeb492136d409e611132f0e336b338b
+    size: 9563
+model_precision:
+  cmd: python src/precision.py data/train_prepare/train.csv data/model_train/model.pkl
+  deps:
+  - path: data/model_train/model.pkl
+    md5: 3503ca3066e76c3a036a9793f7800c99
+    size: 1441
+  - path: data/train_prepare/train.csv
+    md5: 54997e9709d45182448aa396f4798a78
+    size: 15645
+  - path: src/precision.py
+    md5: 92d2b7f9122b77181248c1d1390cd53a
+    size: 1236
+  params:
+    params.yaml:
+      model_precision.features:
+      - Pclass
+      - Age
+      - SibSp
+      - Parch
+      - Fare
+      - emb_S
+      - emb_C
+      - emb_Q
+      - Sex
+      - has_cabin
+      model_precision.target: Survived

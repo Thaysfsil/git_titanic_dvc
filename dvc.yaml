@@ -1,0 +1,55 @@
+stages:
+  train_prepare:
+    cmd: python src/prepare.py  train_prepare data/titanic.csv
+    deps:
+    - data/titanic.csv
+    - src/prepare.py
+    params:
+    - train_prepare.col_to_encoder
+    outs:
+    - data/train_prepare/encoder.pkl
+    - data/train_prepare/train.csv
+  
+  test_prepare:
+    cmd: python src/prepare.py  test_prepare data/titanic_test.csv
+    deps:
+    - data/titanic_test.csv
+    - src/prepare.py
+    params:
+    - test_prepare.col_to_encoder
+    outs:
+    - data/test_prepare/encoder.pkl
+    - data/test_prepare/test.csv
+
+  model_train:
+    cmd: python src/train.py data/train_prepare/train.csv
+    deps:
+    - data/train_prepare/train.csv
+    - src/train.py
+    params:
+    - model_train.features
+    - model_train.target
+    - model_train.model_param
+    outs:
+    - data/model_train/model.pkl
+   
+
+  model_predict:
+    cmd: python src/predict.py data/test_prepare/test.csv data/model_train/model.pkl
+    deps:
+    - data/test_prepare/test.csv
+    - src/predict.py
+    params:
+    - model_predict.features
+    outs:
+    - data/model_predict/df_prediction.csv
+
+  model_precision:
+    cmd: python src/precision.py data/train_prepare/train.csv data/model_train/model.pkl
+    deps:
+    - data/train_prepare/train.csv
+    - data/model_train/model.pkl
+    - src/precision.py
+    params:
+    - model_precision.features
+    - model_precision.target

@@ -1,0 +1,20 @@
+train_prepare: 
+  col_to_encoder: Sex
+
+test_prepare: 
+  col_to_encoder: Sex
+
+model_train:
+  features: ['Pclass', 'Age', 'SibSp', 'Parch', 'Fare', 'emb_S', 'emb_C', 'emb_Q', 'Sex', 'has_cabin']
+  target: Survived
+  model_param:
+    criterion: entropy
+    random_state: 20181105 
+    min_samples_split: 90
+
+model_predict:
+  features: ['Pclass', 'Age', 'SibSp', 'Parch', 'Fare', 'emb_S', 'emb_C', 'emb_Q', 'Sex', 'has_cabin']
+
+model_precision:
+  features: ['Pclass', 'Age', 'SibSp', 'Parch', 'Fare', 'emb_S', 'emb_C', 'emb_Q', 'Sex', 'has_cabin']
+  target: Survived
